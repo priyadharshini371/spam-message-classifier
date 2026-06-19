@@ -1,16 +1,11 @@
-
 import streamlit as st
 import joblib
 import re
 
-# Load files
-model = joblib.load(
-    "model.pkl"
-)
+# Load model
+model = joblib.load("model.pkl")
+vectorizer = joblib.load("vectorizer.pkl")
 
-vectorizer = joblib.load(
-    "vectorizer.pkl"
-)
 
 # Clean text
 def clean(text):
@@ -26,58 +21,98 @@ def clean(text):
     return text
 
 
-# UI
+# Page
+st.set_page_config(
+    page_title="Smart Spam Detector",
+    page_icon="🛡️"
+)
+
+# Title
 st.title(
-    "📩 Spam Message Classifier"
+    "🛡️ Smart Spam Detection System"
 )
 
 st.write(
-    "Type a message and predict"
+    "Detect whether a message is Spam or Not Spam using Machine Learning."
 )
 
+# Examples
+st.info(
+"""
+Try examples:
+
+• Congratulations! You won ₹5000
+
+• Hi Priya, see you tomorrow
+
+• Free entry in weekly contest
+"""
+)
+
+# Input
 msg = st.text_area(
-    "Enter Message"
+    "✍️ Enter Message",
+    height=150
 )
 
-if st.button(
-    "Predict"
-):
+
+# Predict
+if st.button("Predict"):
 
     if msg:
 
         cleaned = clean(msg)
 
-        vector = (
-            vectorizer
-            .transform(
-                [cleaned]
-            )
+        vector = vectorizer.transform(
+            [cleaned]
         )
 
-        result = (
-            model.predict(
+        result = model.predict(
+            vector
+        )[0]
+
+        probability = (
+            model.predict_proba(
                 vector
             )[0]
-            probability = (
-    model.predict_proba(
-        vector
-    )[0]
-)
-
-confidence = (
-    max(probability)
-    * 100
-)
         )
-if result == "spam":
 
-    st.error(
-        f"🚨 SPAM\n\nConfidence: {confidence:.2f}%"
-    )
+        confidence = (
+            max(probability)
+            * 100
+        )
 
-else:
+        st.divider()
 
-    st.success(
-        f"✅ NOT SPAM\n\nConfidence: {confidence:.2f}%"
-    )
-        
+        if result == "spam":
+
+            st.error(
+                f"""
+🚨 SPAM
+
+Confidence:
+{confidence:.2f}%
+"""
+            )
+
+        else:
+
+            st.success(
+                f"""
+✅ NOT SPAM
+
+Confidence:
+{confidence:.2f}%
+"""
+            )
+
+    else:
+
+        st.warning(
+            "Enter a message first."
+        )
+
+
+st.caption(
+    "Built using Python • Scikit-learn • Streamlit"
+)
