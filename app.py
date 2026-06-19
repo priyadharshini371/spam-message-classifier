@@ -58,16 +58,26 @@ if st.button(
             model.predict(
                 vector
             )[0]
+            probability = (
+    model.predict_proba(
+        vector
+    )[0]
+)
+
+confidence = (
+    max(probability)
+    * 100
+)
         )
+if result == "spam":
 
-        if result == "spam":
+    st.error(
+        f"🚨 SPAM\n\nConfidence: {confidence:.2f}%"
+    )
 
-            st.error(
-                "🚨 SPAM"
-            )
+else:
 
-        else:
-
-            st.success(
-                "✅ NOT SPAM"
-            )
+    st.success(
+        f"✅ NOT SPAM\n\nConfidence: {confidence:.2f}%"
+    )
+        
