@@ -43,8 +43,6 @@ Try examples:
 
 • Congratulations! You won ₹5000
 
-• Hi Priya, see you tomorrow
-
 • Free entry in weekly contest
 """
 )
